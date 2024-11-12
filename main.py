@@ -32,7 +32,7 @@ def start(server, appname, api_key, identifier):
     start_dynamic_analysis()
     set_proxy()
     test_activity("exported")
-   # test_activity("activity")
+    test_activity("activity")
     tls_test()
     dynamic_json()
 
@@ -87,6 +87,7 @@ def static_json():
 
 
 def start_dynamic_analysis():
+    print("Processing")
     response = requests.post(SERVER + '/api/v1/dynamic/start_analysis', data=DATA_HASH, headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"failed to start analysis : {response.content}")
@@ -104,7 +105,7 @@ def set_proxy():
     print(f"Successfully Set Proxy")
 
 def mobsfy():
-    print("MobSFY android runtime environment")
+    print("MobSFY android runtime environment set")
     response = requests.post(SERVER + '/api/v1/android/mobsfy', data=ADB_IDENTIFIER,headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"failed to mobsfy : {response.content}")
@@ -112,7 +113,7 @@ def mobsfy():
     print("Successfully MobSfy")
 
 def test_activity(action):
-    print(f"Start test {action} Activity")
+    print(f"Start {action} Activity")
     data = {"hash": HASH, "test": action}
     response = requests.post(SERVER + '/api/v1/android/activity', data=data, headers=API_KEY_HEADERS)
     if response.status_code != 200:
