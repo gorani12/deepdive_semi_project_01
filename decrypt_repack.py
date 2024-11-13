@@ -42,14 +42,14 @@ def decrypt_all_dex_files(directory, key):
 
 def decompile_apk(apk_path):
     try:
-        subprocess.run([APKTOOL_PATH, "d", "-s", apk_path], check=True)
+        subprocess.run([APKTOOL_PATH, "d", "-s", apk_path], stdin=subprocess.DEVNULL, check=True)
         print("APK 디컴파일 완료.")
     except subprocess.CalledProcessError as e:
         print(f"APK 디컴파일 실패: {e}")
 
 def repackage_apk(decompiled_folder, output_apk_path):
     try:
-        subprocess.run([APKTOOL_PATH, "b", decompiled_folder, "-o", output_apk_path], check=True)
+        subprocess.run([APKTOOL_PATH, "b", decompiled_folder, "-o", output_apk_path], stdin=subprocess.DEVNULL, check=True)
         print("APK 리패키징 완료.")
     except subprocess.CalledProcessError as e:
         print(f"APK 리패키징 실패: {e}")
@@ -61,13 +61,13 @@ def sign_apk(apk_path, signed_apk_path, keystore_path="dev.key", alias="dev", pa
                 KEYTOOL_PATH, "-genkey", "-v", "-keystore", keystore_path, "-alias", alias,
                 "-keyalg", "RSA", "-keysize", "2048", "-dname", "CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown",
                 "-storepass", password, "-keypass", password
-            ], check=True)
+            ], stdin=subprocess.DEVNULL, check=True)
             print("Keystore 생성 완료.")
         
         subprocess.run([
             JARSIGNER_PATH, "-verbose", "-keystore", keystore_path, "-storepass", password,
             "-signedjar", signed_apk_path, apk_path, alias
-        ], check=True)
+        ], stdin=subprocess.DEVNULL, check=True)
         print("APK 서명 완료.")
     except subprocess.CalledProcessError as e:
         print(f"APK 서명 실패: {e}")
