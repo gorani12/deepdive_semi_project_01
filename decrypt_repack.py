@@ -76,14 +76,15 @@ def decrypt_and_repack(apk_path, key):
     apk_name = os.path.splitext(apk_path)[0]
     decompiled_folder = apk_name
     output_apk_path = "app.apk"
-    signed_apk_path = "output.apk"
+    signed_apk_path = "decrypt_"+apk_path.split("\\")[-1]
 
     decompile_apk(apk_path)
     decrypt_all_dex_files(decompiled_folder, key)
     repackage_apk(decompiled_folder, output_apk_path)
     sign_apk(output_apk_path, signed_apk_path)
+    return signed_apk_path
 
 if __name__ == "__main__":
     key = "dbcdcfghijklmaop"
-    apk_path = "pgsHZz.apk"
+    apk_path = "sample.apk"
     decrypt_and_repack(apk_path, key)

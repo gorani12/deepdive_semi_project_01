@@ -3,11 +3,12 @@ from http.client import responses
 import requests
 import fire
 import json
-
 from requests_toolbelt import MultipartEncoder
+import decrypt_repack
 
 SERVER = ''
 APPNAME = ''
+APPPATH = ''
 API_KEY = ''
 ADB_IDENTIFIER = ''
 HASH = ''
@@ -15,13 +16,17 @@ DATA_HASH = ''
 API_KEY_HEADERS = None
 
 
-def start(server, appname, api_key, identifier):
-    global SERVER, APPNAME, API_KEY, ADB_IDENTIFIER, API_KEY_HEADERS, DATA_HASH
+def start(server, apppath, api_key, identifier):
+    global SERVER, APPNAME, APPPATH, API_KEY, ADB_IDENTIFIER, API_KEY_HEADERS, DATA_HASH
     SERVER = server
-    APPNAME = appname
+    APPPATH = apppath
+    APPNAME = apppath.split('/')[-1]
     API_KEY = api_key
     ADB_IDENTIFIER = {'identifier': identifier}
     API_KEY_HEADERS = {'Authorization': api_key}
+    decrypt = decrypt_repack
+    APPNAME = decrypt.decrypt_and_repack(APPPATH, "dbcdcfghijklmaop")
+    print(APPNAME)
     data = upload()
     print("Start Static Analysis")
     scan(data)
@@ -35,6 +40,7 @@ def start(server, appname, api_key, identifier):
     test_activity("activity")
     tls_test()
     dynamic_json()
+
 
 def upload():
     global HASH, DATA_HASH
@@ -113,13 +119,19 @@ def mobsfy():
     print("Successfully MobSfy")
 
 def test_activity(action):
-    print(f"Start {action} Activity")
+    if action == "activity":
+        print("Start Activity")
+    else:
+        print(f"Start {action} Activity")
     data = {"hash": HASH, "test": action}
     response = requests.post(SERVER + '/api/v1/android/activity', data=data, headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"failed to test activity : {response.content}")
         exit(1)
-    print(f"Successfully tested {action} Activity")
+    if action == "activity":
+        print("Successfully tested Activity")
+    else:
+        print(f"Successfully tested {action} Activity")
 
 def tls_test():
     print("Start TLS/SSL Test")
