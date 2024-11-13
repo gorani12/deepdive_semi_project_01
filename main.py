@@ -8,7 +8,6 @@ import decrypt_repack
 
 SERVER = ''
 APPNAME = ''
-APPPATH = ''
 API_KEY = ''
 ADB_IDENTIFIER = ''
 HASH = ''
@@ -17,16 +16,23 @@ API_KEY_HEADERS = None
 
 
 def start(server, apppath, api_key, identifier):
-    global SERVER, APPNAME, APPPATH, API_KEY, ADB_IDENTIFIER, API_KEY_HEADERS, DATA_HASH
+    """
+    APK 정적/동적 분석 자동화 도구
+    :param server: MobSF의 서버 주소 ex) http://127.0.0.1:8000
+    :param apppath: 분석할 .apk 파일 ex) sample.apk
+    :param api_key: MobSF의 API 키 ex) 414b2c503175858405a9c8f7caa58d0d9a0736f0958e9868812b8ff627e97917
+    :param identifier: 안드로이드 가상머신 또는 실제 휴대폰의 주소 ex) 192.168.0.1:5555
+
+    """
+    global SERVER, APPNAME, API_KEY, ADB_IDENTIFIER, API_KEY_HEADERS, DATA_HASH
     SERVER = server
-    APPPATH = apppath
     APPNAME = apppath.split('/')[-1]
     API_KEY = api_key
     ADB_IDENTIFIER = {'identifier': identifier}
     API_KEY_HEADERS = {'Authorization': api_key}
     print("복호화 시작")
     decrypt = decrypt_repack
-    APPNAME = decrypt.decrypt_and_repack(APPPATH, "dbcdcfghijklmaop")
+    APPNAME = decrypt.decrypt_and_repack(apppath, "dbcdcfghijklmaop")
     print(f"복호화 완료 APK{APPNAME}")
     data = upload()
     print("정적 분석 시작")
@@ -96,7 +102,7 @@ def static_json():
 
 
 def start_dynamic_analysis():
-    print("동적 분석 시작 하는중 ...")
+    print("동적 분석 하는중 ...")
     response = requests.post(SERVER + '/api/v1/dynamic/start_analysis', data=DATA_HASH, headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"동적 분석 실행 실패 : {response.content}")
