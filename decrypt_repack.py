@@ -1,12 +1,13 @@
 import os
 import subprocess
-from Crypto.Cipher import AES
+from Cryptodome.Cipher import AES
 
 # 도구 경로 설정 (자신의 환경에 맞게 수정)
-APKTOOL_PATH = "C:\\Users\\ASUS\\Desktop\\Cyber_Security\\Apktool-2.10.0\\scripts\\windows\\apktool.bat"
-KEYTOOL_PATH = "C:\\Program Files\\Java\\jdk-23\\bin\\keytool.exe"
-JARSIGNER_PATH = "C:\\Program Files\\Java\\jdk-23\\bin\\jarsigner.exe"
-ZIPALIGN_PATH = "C:\\Users\\ASUS\\AppData\\Local\\Android\\Sdk\\build-tools\\34.0.0\\zipalign.exe"
+# JAVA_HOME 환경변수가 설정되어있어야함
+APKTOOL_PATH = ".\\apktool.bat"
+KEYTOOL_PATH = os.environ['JAVA_HOME']+"\\bin\\keytool.exe"
+JARSIGNER_PATH = os.environ['JAVA_HOME']+"\\bin\\jarsigner.exe"
+ZIPALIGN_PATH = os.environ['LocalAppData']+"\\Android\\Sdk\\build-tools\\34.0.0\\zipalign.exe"
 
 class AESCipherECB:
     def __init__(self, key):
