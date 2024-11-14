@@ -33,7 +33,7 @@ def start(server, apppath, api_key, identifier):
     print("복호화 시작")
     decrypt = decrypt_repack
     APPNAME = decrypt.decrypt_and_repack(apppath, "dbcdcfghijklmaop")
-    print(f"복호화 완료 APK{APPNAME}")
+    print(f"복호화 완료 APK : {APPNAME}")
     data = upload()
     print("정적 분석 시작")
     scan(data)
@@ -48,6 +48,8 @@ def start(server, apppath, api_key, identifier):
     tls_test()
     dynamic_stop()
     dynamic_json()
+    dynamic_download('web_traffic.txt')
+    # dynamic_download('logcat.txt')
 
 
 def upload():
@@ -82,10 +84,8 @@ def static_pdf():
     if response.status_code != 200:
         print(f"파일 생성 실패 : {response.content}")
         exit(1)
-    with open(f"{APPNAME}_{HASH}_static.pdf", "wb") as f:
-        for chunk in response.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
+    with open(f"output\\{APPNAME}_{HASH}_static.pdf", "wb") as f:
+            f.write(response.content)
     print(f"{APPNAME}_{HASH}_static.pdf로 파일이 생성됨.")
 
 
@@ -96,7 +96,7 @@ def static_json():
     if response.status_code != 200:
         print(f"파일 생성 실패 : {response.content}")
         exit(1)
-    with open(f"{APPNAME}_{HASH}_static.json", "wb") as f:
+    with open(f"output\\{APPNAME}_{HASH}_static.json", "wb") as f:
         f.write(response.content)
     print(f"{APPNAME}_{HASH}_static.json로 파일이 생성됨")
 
@@ -120,7 +120,7 @@ def set_proxy():
     print(f"프록시 설정 완료")
 
 def mobsfy():
-    print("안드로이드 환경 구축 중 ...")
+    print("안드로이드 환경 구축 중...")
     response = requests.post(SERVER + '/api/v1/android/mobsfy', data=ADB_IDENTIFIER,headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"환경 구축 실패 : {response.content}")
@@ -133,6 +133,7 @@ def test_activity(action):
     else:
         print(f"{action} Activity 테스트 시작")
     data = {"hash": HASH, "test": action}
+    data1 = DATA_HASH
     response = requests.post(SERVER + '/api/v1/android/activity', data=data, headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"Activity 테스트 실패 : {response.content}")
@@ -164,10 +165,23 @@ def dynamic_json():
     if response.status_code != 200:
         print(f"파일 생성 실패 : {response.content}")
         exit(1)
-    with open(f"{APPNAME}_{HASH}_dynamic.json", "wb") as f:
+    with open(f"output\\{APPNAME}_{HASH}_dynamic.json", "wb") as f:
         f.write(response.content)
     print(f"{APPNAME}_{HASH}_dynamic.json로 파일이 생성됨")
 
+def dynamic_download(target):
+    print(f"{APPNAME}_{target} 불러오는 중..")
+    data = {'file' : HASH + '-' + target, 'hash' : HASH}
+    response = requests.post(SERVER+'/api/v1/dynamic/download', data=data, headers=API_KEY_HEADERS)
+    if response.status_code != 200:
+        print("failed")
+        exit(1)
+    try:
+        with open('output\\'+ APPNAME + '_' + HASH + '_' + target, 'wb') as f:
+            f.write(response.content)
+        print(f"{APPNAME}_{target} 저장 완료")
+    except Exception as e:
+        print(f"{APPNAME}_{target} 저장 실패 : " + str(e))
 
 if __name__ == "__main__":
     fire.Fire(start)
