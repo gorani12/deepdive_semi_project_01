@@ -1,3 +1,4 @@
+import os
 from http.client import responses
 
 import requests
@@ -35,6 +36,12 @@ def start(server, apppath, api_key, identifier):
     APPNAME = decrypt.decrypt_and_repack(apppath, "dbcdcfghijklmaop")
     print(f"복호화 완료 APK : {APPNAME}")
     data = upload()
+    print("현재 위치에 결과물 폴더를 생성합니다. : output")
+    try:
+        os.mkdir('output')
+        print("결과물 폴더가 생성되었습니다. : output")
+    except FileExistsError:
+        print("이미 폴더가 존재합니다.")
     print("정적 분석 시작")
     scan(data)
     static_pdf()
