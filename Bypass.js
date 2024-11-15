@@ -1,16 +1,22 @@
 var localeBypassed = false;
+var localeBypassLogLimit = 5; // 로그 출력 제한 횟수
+var localeBypassLogCount = 0; // 현재 로그 출력 횟수
 
 function bypassLocale() {
     if (localeBypassed) return; // 이미 우회했다면 중복 실행 방지
     Java.perform(function () {
         var getLanguage = Java.use("java.util.Locale").getLanguage.overload();
         getLanguage.implementation = function () {
-            console.log("[*] Bypassing locale detection");
+            if (localeBypassLogCount < localeBypassLogLimit) {
+                console.log("[*] Bypassing locale detection");
+                localeBypassLogCount++;
+            }
             return "ko"; // 항상 한국어로 설정된 것처럼 반환
         };
     });
     localeBypassed = true;
 }
+
 
 
 
@@ -87,23 +93,7 @@ function bypassADbDetection() {
     });
 }
 
-function bypassVPNDetection() {
-    Java.perform(function() {
-        try {
-            var equals = Java.use("java.lang.String").equals.overload("java.lang.Object");
-            equals.implementation = function(compareStr) {
-                if (compareStr == "tun0" || compareStr == "ppp0") {
-                    console.log("[*] Bypassing VPN detection");
-                    return false; // VPN 인터페이스가 없는 것처럼 반환
-                }
-                return equals.call(this, compareStr);
-            };
-            console.log("[*] VPN detection bypass successful");
-        } catch (e) {
-            console.error("Error in bypassVPNDetection: " + e.message);
-        }
-    });
-}
+
 
 function bypassProxyDetection() {
     Java.perform(function() {
@@ -163,7 +153,7 @@ bypassRootDetection1();
 bypassRootDetection2();
 bypassEmulatorDetection();
 bypassADbDetection();
-bypassVPNDetection();
+
 bypassProxyDetection();
 bypassNetworkInterfaceDetection();
 bypassResultActivety();
@@ -177,7 +167,6 @@ function performBypass() {
             bypassRootDetection2();
             bypassEmulatorDetection();
             bypassADbDetection();
-            bypassVPNDetection();
             bypassProxyDetection();
 			bypassResultActivety();
             console.log("[*] All bypass methods applied");
