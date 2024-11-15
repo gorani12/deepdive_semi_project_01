@@ -1,6 +1,4 @@
 import os
-from http.client import responses
-
 import requests
 import fire
 import json
