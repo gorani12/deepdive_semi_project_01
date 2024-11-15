@@ -46,6 +46,8 @@ def start(server, apppath, api_key, identifier):
     scan(data)
     static_pdf()
     static_json()
+    APPNAME = apppath.split('/')[-1]
+    scan(upload())
     print("동적 분석 시작")
     mobsfy()
     start_dynamic_analysis()
@@ -183,7 +185,7 @@ def dynamic_json():
 
 
 def dynamic_download(target):
-    print(f"{APPNAME}_{target} 불러오는 중..")
+    print(f"{APPNAME}_{HASH}_{target} 불러오는 중..")
     data = {'file': HASH + '-' + target, 'hash': HASH}
     response = requests.post(SERVER + '/api/v1/dynamic/download', data=data, headers=API_KEY_HEADERS)
     if response.status_code != 200:
