@@ -50,6 +50,7 @@ def start(server, apppath, api_key, identifier):
     mobsfy()
     start_dynamic_analysis()
     set_proxy()
+    frida("Bypass.js")
     test_activity("exported")
     test_activity("activity")
     tls_test()
@@ -92,9 +93,8 @@ def static_pdf():
         print(f"파일 생성 실패 : {response.content}")
         exit(1)
     with open(f"output\\{APPNAME}_{HASH}_static.pdf", "wb") as f:
-            f.write(response.content)
+        f.write(response.content)
     print(f"{APPNAME}_{HASH}_static.pdf로 파일이 생성됨.")
-
 
 
 def static_json():
@@ -126,13 +126,15 @@ def set_proxy():
         exit(1)
     print(f"프록시 설정 완료")
 
+
 def mobsfy():
     print("안드로이드 환경 구축 중...")
-    response = requests.post(SERVER + '/api/v1/android/mobsfy', data=ADB_IDENTIFIER,headers=API_KEY_HEADERS)
+    response = requests.post(SERVER + '/api/v1/android/mobsfy', data=ADB_IDENTIFIER, headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"환경 구축 실패 : {response.content}")
         exit(1)
     print("환경 구축 성공")
+
 
 def test_activity(action):
     if action == "activity":
@@ -150,6 +152,7 @@ def test_activity(action):
     else:
         print(f"{action} Activity 테스트 성공")
 
+
 def tls_test():
     print("TLS/SSL 테스트 시작")
     response = requests.post(SERVER + '/api/v1/android/tls_tests', data=DATA_HASH, headers=API_KEY_HEADERS)
@@ -158,6 +161,7 @@ def tls_test():
         exit(1)
     print("TLS/SSL 성공")
 
+
 def dynamic_stop():
     print("동적 분석 정지 중...")
     response = requests.post(SERVER + '/api/v1/dynamic/stop_analysis', data=DATA_HASH, headers=API_KEY_HEADERS)
@@ -165,6 +169,7 @@ def dynamic_stop():
         print(f"동적 분석 정지 실패 : {response.content}")
         exit(1)
     print("동적 분석 정지 완료")
+
 
 def dynamic_json():
     print("동적 분석 결과를 JSON 파일로 생성 중...")
@@ -176,19 +181,35 @@ def dynamic_json():
         f.write(response.content)
     print(f"{APPNAME}_{HASH}_dynamic.json로 파일이 생성됨")
 
+
 def dynamic_download(target):
     print(f"{APPNAME}_{target} 불러오는 중..")
-    data = {'file' : HASH + '-' + target, 'hash' : HASH}
-    response = requests.post(SERVER+'/api/v1/dynamic/download', data=data, headers=API_KEY_HEADERS)
+    data = {'file': HASH + '-' + target, 'hash': HASH}
+    response = requests.post(SERVER + '/api/v1/dynamic/download', data=data, headers=API_KEY_HEADERS)
     if response.status_code != 200:
-        print("failed")
+        print("불러오기 실패")
         exit(1)
     try:
-        with open('output\\'+ APPNAME + '_' + HASH + '_' + target, 'wb') as f:
+        with open('output\\' + APPNAME + '_' + HASH + '_' + target, 'wb') as f:
             f.write(response.content)
-        print(f"{APPNAME}_{target} 저장 완료")
+        print(f"{APPNAME}_{HASH}_{target} 저장 완료")
     except Exception as e:
-        print(f"{APPNAME}_{target} 저장 실패 : " + str(e))
+        print(f"{APPNAME}_{HASH}_{target} 저장 실패 : " + str(e))
+
+
+def frida(name):
+    print("frida 스크립트 실행 중...")
+    script = ''
+    with open(name, "r", encoding="utf-8") as f:
+        script = f.read()
+    data = {'hash': HASH, 'default_hooks': 'api_monitor,ssl_pinning_bypass,root_bypass,debugger_check_bypass',
+            'auxiliary_hooks': '', 'frida_code': script}
+    response = requests.post(SERVER + '/api/v1/frida/instrument', data=data, headers=API_KEY_HEADERS)
+    if response.status_code != 200:
+        print("frida 스크립트 실행 실패")
+        exit(1)
+    print(f"frida 스크립트 실행 성공 : {name}")
+
 
 if __name__ == "__main__":
     fire.Fire(start)
