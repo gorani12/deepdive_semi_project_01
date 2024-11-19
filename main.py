@@ -4,6 +4,7 @@ import fire
 import json
 from requests_toolbelt import MultipartEncoder
 import decrypt_repack
+import time
 
 SERVER = ''
 APPNAME = ''
@@ -46,9 +47,6 @@ def start(server, apppath, api_key, identifier):
     static_json()
     APPNAME = apppath.split('/')[-1]
     scan(upload())
-
-
-
     print("동적 분석 시작")
     mobsfy()
     start_dynamic_analysis()
@@ -56,6 +54,7 @@ def start(server, apppath, api_key, identifier):
     frida("Bypass.js")
     test_activity("exported")
     test_activity("activity")
+    time.sleep(5)
     tls_test()
     dynamic_stop()
     dynamic_json()
