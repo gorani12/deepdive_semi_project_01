@@ -46,6 +46,9 @@ def start(server, apppath, api_key, identifier):
     static_json()
     APPNAME = apppath.split('/')[-1]
     scan(upload())
+
+
+
     print("동적 분석 시작")
     mobsfy()
     start_dynamic_analysis()
@@ -87,7 +90,7 @@ def scan(data):
 
 
 def static_pdf():
-    print("정적 분석 결과를 PDF 파일로 생성 중")
+    print("정적 분석 결과를 PDF 파일로 생성 중...")
     response = requests.post(SERVER + '/api/v1/download_pdf', data=DATA_HASH, headers=API_KEY_HEADERS, stream=True)
     if response.status_code != 200:
         print(f"파일 생성 실패 : {response.content}")
@@ -98,7 +101,7 @@ def static_pdf():
 
 
 def static_json():
-    print("정적 분석 결과를 JSON 파일로 생성 중")
+    print("정적 분석 결과를 JSON 파일로 생성 중...")
     response = requests.post(SERVER + '/api/v1/report_json', data=DATA_HASH, headers=API_KEY_HEADERS, stream=True)
     if response.status_code != 200:
         print(f"파일 생성 실패 : {response.content}")
@@ -109,7 +112,7 @@ def static_json():
 
 
 def start_dynamic_analysis():
-    print("동적 분석 하는중 ...")
+    print("동적 분석 하는중...")
     response = requests.post(SERVER + '/api/v1/dynamic/start_analysis', data=DATA_HASH, headers=API_KEY_HEADERS)
     if response.status_code != 200:
         print(f"동적 분석 실행 실패 : {response.content}")
@@ -118,7 +121,7 @@ def start_dynamic_analysis():
 
 
 def set_proxy():
-    print("프록시 설정 중")
+    print("프록시 설정 중...")
     _set = {'action': 'set'}
     response = requests.post(SERVER + '/api/v1/android/global_proxy', data=_set, headers=API_KEY_HEADERS)
     if response.status_code != 200:
@@ -138,7 +141,7 @@ def mobsfy():
 
 def test_activity(action):
     if action == "activity":
-        print("Activity 시작")
+        print("Activity 테스트 시작")
     else:
         print(f"{action} Activity 테스트 시작")
     data = {"hash": HASH, "test": action}
@@ -183,7 +186,7 @@ def dynamic_json():
 
 
 def dynamic_download(target):
-    print(f"{APPNAME}_{HASH}_{target} 불러오는 중..")
+    print(f"{APPNAME}_{HASH}_{target} 불러오는 중...")
     data = {'file': HASH + '-' + target, 'hash': HASH}
     response = requests.post(SERVER + '/api/v1/dynamic/download', data=data, headers=API_KEY_HEADERS)
     if response.status_code != 200:
