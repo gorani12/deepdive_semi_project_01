@@ -165,16 +165,6 @@ Java.perform(function () {
 
 
 // 각 탐지 우회 함수 실행
-bypassLocale();
-bypassRootDetection1();
-bypassRootDetection2();
-bypassEmulatorDetection();
-bypassADbDetection();
-bypassProxyDetection();
-bypassNetworkInterfaceDetection();
-modifyInstallAndRun();
-
-// 각 탐지 우회 함수 실행
 function performBypass() {
     Java.perform(function() {
         try {
@@ -184,7 +174,7 @@ function performBypass() {
             bypassEmulatorDetection();
             bypassADbDetection();
             bypassProxyDetection();
-        	  modifyInstallAndRun();
+            modifyInstallAndRun();
             console.log("[*] All bypass methods applied");
         } catch (e) {
             console.error("Error while performing bypass: " + e.message);
