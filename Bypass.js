@@ -93,8 +93,6 @@ function bypassADbDetection() {
     });
 }
 
-
-
 function bypassProxyDetection() {
     Java.perform(function() {
         try {
@@ -132,14 +130,33 @@ function bypassNetworkInterfaceDetection() {
     });
 }
 
-function bypassResultActivety() {
-	Java.perform(function () {
-		var ResultActivity = Java.use("com.ldjSxw.heBbQd.ResultActivity");
-		ResultActivity.initInstall.implementation = function () {
-			console.log("Bypassing...");
-			this.deleteAPK();
-		};
-	});
+
+
+function modifyInstallAndRun() {
+Java.perform(function () {
+    try {
+        // 접근성 서비스 상태를 확인하는 메서드 후킹
+        var AccessibilitySettings = Java.use('android.provider.Settings$Secure');
+        var getString = AccessibilitySettings.getString.overload('android.content.ContentResolver', 'java.lang.String');
+
+        getString.implementation = function (resolver, name) {
+            if (name == "enabled_accessibility_services") {
+                console.log("[*] Always enabling accessibility service");
+                // 접근성 서비스가 활성화된 것처럼 반환
+                return "com.bosetn.oct16m/com.bosetn.oct16m.service.LAutoService";
+            }
+            return getString.call(this, resolver, name);
+        };
+
+        console.log("[*] Hook installed to always enable accessibility service.");
+
+    } catch (e) {
+        console.error("Error while hooking accessibility service: " + e.message);
+    }
+});
+
+
+
 }
 
 
@@ -153,10 +170,9 @@ bypassRootDetection1();
 bypassRootDetection2();
 bypassEmulatorDetection();
 bypassADbDetection();
-
 bypassProxyDetection();
 bypassNetworkInterfaceDetection();
-bypassResultActivety();
+modifyInstallAndRun();
 
 // 각 탐지 우회 함수 실행
 function performBypass() {
@@ -168,7 +184,7 @@ function performBypass() {
             bypassEmulatorDetection();
             bypassADbDetection();
             bypassProxyDetection();
-			bypassResultActivety();
+        	  modifyInstallAndRun();
             console.log("[*] All bypass methods applied");
         } catch (e) {
             console.error("Error while performing bypass: " + e.message);
