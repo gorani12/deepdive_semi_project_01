@@ -15,6 +15,7 @@ ZIPALIGN_PATH = os.environ['LocalAppData']+"\\Android\\Sdk\\build-tools\\34.0.0\
 # JARSIGNER_PATH = 
 # ZIPALIGN_PATH = 
 # ============================================================================================
+
 class AESCipherECB:
     def __init__(self, key):
         self.key = key.encode('utf-8')
@@ -33,20 +34,33 @@ class AESCipherECB:
     def unpad(self, s):
         return s[:-s[-1]]
 
-# 주석
-
 def decrypt_all_dex_files(directory, key):
     aes = AESCipherECB(key)
     for filename in os.listdir(directory):
         if filename.endswith(".dex"):
             dex_path = os.path.join(directory, filename)
             output_path = os.path.join(directory, f"decrypted_{filename}")
+
+            # 로그: 암호화된 DEX 파일 탐색
+            print(f"[INFO] DEX 파일 발견: {filename}")
+            print(f"[INFO] 복호화 키: {key}")
+
             try:
+                # 로그: 복호화 시작
+                print(f"[INFO] {filename} 복호화 중...")
                 aes.decrypt_file(dex_path, output_path)
+                
+                # 원본 파일 교체
                 os.remove(dex_path)
                 os.rename(output_path, dex_path)
+                
+                # 로그: 복호화 완료
+                print(f"[SUCCESS] {filename} 복호화 완료.")
+
             except Exception as e:
-                print(f"{filename}는 복호화되지 않았습니다: {e}")
+                # 로그: 복호화 실패
+                print(f"[ERROR] {e}")
+                print(f"[ERROR] {filename} 복호화 실패: 해당 파일은 암호화되지 않음.")
 
 def decompile_apk(apk_path):
     try:
