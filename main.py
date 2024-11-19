@@ -53,6 +53,7 @@ def start(server, apppath, api_key, identifier):
     set_proxy()
     frida("Bypass.js")
     tls_test()
+    frida("Bypass.js")
     test_activity("exported")
     test_activity("activity")
     time.sleep(5)
