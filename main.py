@@ -51,7 +51,6 @@ def start(server, apppath, api_key, identifier):
     mobsfy()
     start_dynamic_analysis()
     set_proxy()
-    frida("Bypass.js")
     tls_test()
     frida("Bypass.js")
     test_activity("exported")
