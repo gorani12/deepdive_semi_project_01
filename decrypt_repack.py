@@ -2,13 +2,19 @@ import os
 import subprocess
 from Cryptodome.Cipher import AES
 
-# 도구 경로 설정 (자신의 환경에 맞게 수정)
-# JAVA_HOME 환경변수가 설정되어있어야함
+# ============================================================================================
+# 도구 경로 설정 (Windows) / JAVA_HOME 환경변수 설정할 것
 APKTOOL_PATH = ".\\apktool.bat"
 KEYTOOL_PATH = os.environ['JAVA_HOME']+"\\bin\\keytool.exe"
 JARSIGNER_PATH = os.environ['JAVA_HOME']+"\\bin\\jarsigner.exe"
 ZIPALIGN_PATH = os.environ['LocalAppData']+"\\Android\\Sdk\\build-tools\\34.0.0\\zipalign.exe"
-
+# ============================================================================================
+# 도구 경로 설정 (MacOS)
+# APKTOOL_PATH = 
+# KEYTOOL_PATH = 
+# JARSIGNER_PATH = 
+# ZIPALIGN_PATH = 
+# ============================================================================================
 class AESCipherECB:
     def __init__(self, key):
         self.key = key.encode('utf-8')
@@ -26,6 +32,8 @@ class AESCipherECB:
 
     def unpad(self, s):
         return s[:-s[-1]]
+
+# 주석
 
 def decrypt_all_dex_files(directory, key):
     aes = AESCipherECB(key)
